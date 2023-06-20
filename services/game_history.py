@@ -157,7 +157,7 @@ class GameHistory:
             browser.get(link)
             WebDriverWait(browser, 10).until(is_ready)
             browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            WebDriverWait(browser, 30).until(is_ready)
+            WebDriverWait(browser, 10).until(is_ready)
 
             # Inspect the page to get elements
             xpath_game_card_mapper = "//div[@class='GameCard_gc__UCI46 GameCardsMapper_gamecard__pz1rg']"
