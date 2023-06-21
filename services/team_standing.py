@@ -34,6 +34,7 @@ class TeamStanding:
         create_folder_if_not_existed(self.path_data)
 
     def crawler(self):
+        self.header['Host'] = 'stats.nba.com'
         self.header['Referer'] = 'https://www.nba.com/'
 
         for season in self.seasons:

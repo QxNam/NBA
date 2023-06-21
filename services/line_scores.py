@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 
 from collections import defaultdict
+from configs.params import HEADERS
 from services.processing import processing_line_scores
 from utils.logging import logger
 from utils.utils import (
@@ -25,6 +26,8 @@ class LineScores:
         self.path_data = path_data
         self.timeline = get_timeline(start_date, end_date)
 
+        self.header = HEADERS
+
         self.games_data = defaultdict(list)
         create_folder_if_not_existed(self.path_data)
     
@@ -33,16 +36,19 @@ class LineScores:
         return f"https://global.nba.com/statsm2/scores/daily.json?gameDate={date}"
     
     def crawler(self):
+        self.header['Host'] = 'global.nba.com'
+        self.header['Referer'] = 'https://global.nba.com/scores/'
+
         for time_step in self.timeline:
             flag = True
             date_str = time_step.strftime("%Y-%m-%d")
             api = self.get_api_by_date(date_str)
-            response = requests.get(api)
+            res = requests.get(api, headers=self.header)
 
-            if response.status_code == 200:
-                if response.text != '':
-                    response_data = json.loads(response.text)
-                    processed_data = processing_line_scores(response_data)
+            if res.status_code == 200:
+                if res.text != '':
+                    res_data = json.loads(res.text)
+                    processed_data = processing_line_scores(res_data)
 
                     if processed_data:
                         if not any(self.games_data.values()):
@@ -59,7 +65,7 @@ class LineScores:
                 else:
                     logger("warning", f"API URL: '{api}' return empty data!")
             else:
-                logger("warning", "API URL: '{api}' return status code: {response.status_code}")
+                logger("warning", f"API URL: '{api}' return status code: {res.status_code}")
 
             if time_step.is_month_end or date_str == self.end_date:
                 df = pd.DataFrame(self.games_data)
