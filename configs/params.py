@@ -56,3 +56,13 @@ PER_MODES_LINEUPS = ['Totals',
     'MinutesPer'
 ]
 GROUP_QUANTITY_LINEUPS = [2, 3, 4, 5]
+
+# Team standing
+BASE_API_TEAM_STANDING = 'https://stats.nba.com/stats/leaguestandingsv3'
+BASE_PARAMS_TEAM_STANDING = {
+    'GroupBy': 'conf',
+    'LeagueID': '00',
+    'Season': '2016-17',
+    'SeasonType': 'Regular Season',
+    'Section': 'overall'
+}
