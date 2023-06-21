@@ -64,6 +64,6 @@ class LineScores:
             if time_step.is_month_end or date_str == self.end_date:
                 df = pd.DataFrame(self.games_data)
                 df.to_csv(f'{self.path_data}/line_scores_{date_str}.csv', index=False, encoding='utf-8')
-                logger("success", f"Save data at: '{self.path_data}/line_scores_{date_str}.csv' saved!")
+                logger("success", f"Saved data at: '{self.path_data}/line_scores_{date_str}.csv'")
 
             time.sleep(1)
