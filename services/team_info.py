@@ -117,6 +117,6 @@ class TeamInfo:
                 time.sleep(2)
 
             data_team.to_csv(f'{self.path_data}/{team_name}.csv', index=False)
-            logger("success", f"Data: '{self.path_data}/{team_name}.csv' saved!")
+            logger("success", f"Saved data at: '{self.path_data}/{team_name}.csv'")
     
         browser.quit()

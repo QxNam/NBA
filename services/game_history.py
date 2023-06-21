@@ -101,14 +101,14 @@ class GameHistory:
                 leader_ast = tds_game_card_leader[3].text
 
                 if team_name_short not in NBA_TEAM_SHORT_NAME.keys():
-                    logger("warning", f"No team name short: '{team_name_short}'")
+                    logger("error", f"No team name short: '{team_name_short}'")
 
                 if NBA_TEAM_SHORT_NAME[team_name_short] == away_team_name:
                     team_key = 'away_team'
                 elif NBA_TEAM_SHORT_NAME[team_name_short] == home_team_name:
                     team_key = 'home_team'
                 else:
-                    logger("warning", f"No team full name for '{team_name_short}' " \
+                    logger("error", f"No team full name for '{team_name_short}' " \
                             f"match with '{away_team_name}' or '{home_team_name}'")
                     continue
 
@@ -213,7 +213,7 @@ class GameHistory:
                     self.home_teams_leader.append(game_leader_str_pattern.format(**game_leaders['home_team']))
 
             if flag:
-                logger("info", f"Page: '{link}' Done!")
+                logger("success", f"Page: '{link}' Done!")
                 flag = True
 
             if time_step.is_month_end:
@@ -242,4 +242,4 @@ class GameHistory:
             return
         
         df.to_csv(path, index=False, encoding='utf-8')
-        logger("success", f"Save dataframe to: {path}")
+        logger("success", f"Save dataframe at: {path}")
