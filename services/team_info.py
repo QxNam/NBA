@@ -1,4 +1,3 @@
-import os
 import time
 import pandas as pd
 
@@ -12,7 +11,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from configs.nba_team import NBA_FULL_NAME
 from utils.logging import logger
-from utils.utils import is_ready
+from utils.utils import (
+    is_ready,
+    create_folder_if_not_existed
+)
 
 
 class TeamInfo:
@@ -20,7 +22,7 @@ class TeamInfo:
         self,
         start_year: int = 2017,
         end_year: int = 2017,
-        path_data: str = './data/lineups',
+        path_data: str = './data/team_info',
     ):
         self.start_year = start_year
         self.end_year = end_year
@@ -35,9 +37,7 @@ class TeamInfo:
         self.keys_roster = ['no.', 'player', 'pos', 'height', 'weight', 'birth_date', 'country', 'exp', 'college']
         self.keys_salary = ['player', 'salary']
 
-        if not os.path.exists(self.path_data):
-            logger("info", f"Create directory: {self.path_data}")
-            os.makedirs(self.path_data)
+        create_folder_if_not_existed(self.path_data)
     
     @staticmethod
     def get_page_by_name_year(short_name: str = 'ATL', year: int = 2017):

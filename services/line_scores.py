@@ -1,4 +1,3 @@
-import os
 import json
 import time
 import requests
@@ -8,7 +7,10 @@ import pandas as pd
 from collections import defaultdict
 from services.processing import processing_line_scores
 from utils.logging import logger
-from utils.utils import get_timeline
+from utils.utils import (
+    get_timeline,
+    create_folder_if_not_existed
+)
 
 
 class LineScores:
@@ -24,10 +26,7 @@ class LineScores:
         self.timeline = get_timeline(start_date, end_date)
 
         self.games_data = defaultdict(list)
-
-        if not os.path.exists(path_data):
-            logger("info", f"Create path {path_data}")
-            os.makedirs(path_data)
+        create_folder_if_not_existed(self.path_data)
     
     @staticmethod
     def get_api_by_date(date: str="2016-01-01"):
