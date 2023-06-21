@@ -1,4 +1,5 @@
 import os
+import json
 import pandas as pd
 
 from urllib.parse import urlencode
@@ -27,3 +28,8 @@ def create_folder_if_not_existed(path_data: str):
     if not os.path.exists(path_data):
         logger("info", f"Create directory: {path_data}")
         os.makedirs(path_data)
+
+def save_json(data, path_file):
+    with open(path_file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+        logger("success", f"Saved data at: {path_file}")

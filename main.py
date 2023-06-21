@@ -4,6 +4,7 @@ from services.line_scores import LineScores
 from services.lineups import LineUps
 from services.team_standing import TeamStanding
 from services.coaches import Coaches
+from services.team_stats import TeamStats
 
 
 if __name__ == '__main__':
@@ -24,3 +25,6 @@ if __name__ == '__main__':
 
     coaches = Coaches()
     coaches.crawler()
+
+    team_stats = TeamStats()
+    team_stats.crawler()

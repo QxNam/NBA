@@ -58,18 +58,18 @@ class LineScores:
                              for key in self.games_data.keys()]
                     else:
                         flag = False
-                        logger("warning", "API URL: '{api}' No game in day!")
+                        logger("warning", f"API URL: {api} No game in day!")
 
                     if flag:
-                        logger("success", f"API URL: '{api}' done!")
+                        logger("success", f"API URL: {api} done!")
                 else:
-                    logger("warning", f"API URL: '{api}' return empty data!")
+                    logger("warning", f"API URL: {api} return empty data!")
             else:
-                logger("warning", f"API URL: '{api}' return status code: {res.status_code}")
+                logger("warning", f"API URL: {api} return status code: {res.status_code}")
 
             if time_step.is_month_end or date_str == self.end_date:
                 df = pd.DataFrame(self.games_data)
                 df.to_csv(f'{self.path_data}/line_scores_{date_str}.csv', index=False, encoding='utf-8')
-                logger("success", f"Saved data at: '{self.path_data}/line_scores_{date_str}.csv'")
+                logger("success", f"Saved data at: {self.path_data}/line_scores_{date_str}.csv")
 
             time.sleep(1)
