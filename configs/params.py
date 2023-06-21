@@ -5,6 +5,7 @@ HEADERS = {
     'Accept': 'application/json, text/plain, */*',
     'x-nba-stats-origin': 'stats',
     'x-nba-stats-token': 'true',
+    'Referer': '',
     'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/113.0',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7'
