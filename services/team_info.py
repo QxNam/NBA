@@ -113,10 +113,10 @@ class TeamInfo:
                 df = pd.merge(df_roster, df_salary, on='player', how='left')
                 data_team = pd.concat([data_team, df], ignore_index=True)
                 
-                logger("success", f"Page: '{link}' done!")
+                logger("success", f"Page: {link} done!")
                 time.sleep(2)
 
             data_team.to_csv(f'{self.path_data}/{team_name}.csv', index=False)
-            logger("success", f"Saved data at: '{self.path_data}/{team_name}.csv'")
+            logger("success", f"Saved data at: {self.path_data}/{team_name}.csv")
     
         browser.quit()

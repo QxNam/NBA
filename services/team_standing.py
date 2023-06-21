@@ -50,9 +50,8 @@ class TeamStanding:
 
                 with open(path_file + file_name, 'w', encoding='utf-8') as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
-                    logger("success", f"Saved data at: '{file_name}'")
+                    logger("success", f"Saved data at: {file_name}")
             else:
                 logger("error", f"Request failure: {file_name}")
             
             time.sleep(2)
-
