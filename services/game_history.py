@@ -1,4 +1,3 @@
-import os
 import time
 import pandas as pd
 
@@ -11,7 +10,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from configs.nba_team import NBA_TEAM_SHORT_NAME
 from utils.logging import logger
-from utils.utils import get_timeline, is_ready
+from utils.utils import (
+    get_timeline, 
+    is_ready,
+    create_folder_if_not_existed
+)
 
 
 class GameHistory:
@@ -44,9 +47,7 @@ class GameHistory:
         self.away_teams_leader = []
         self.home_teams_leader = []
 
-        if not os.path.exists(self.path_data):
-            logger("info", f"Create directory: {self.path_data}")
-            os.makedirs(self.path_data)
+        create_folder_if_not_existed(self.path_data)
 
     def get_game_id(self, game_card_element: WebElement):
         xpath_game_link = ".//section[@class='GameCard_gcMain__q1lUW']/a"
