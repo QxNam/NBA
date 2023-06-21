@@ -6,8 +6,8 @@ if __name__ == '__main__':
     game_history = GameHistory()
     game_history.crawler()
     
-    # team_info = TeamInfo()
-    # team_info.crawler()
+    team_info = TeamInfo()
+    team_info.crawler()
 
-    # line_scores = LineScores()
-    # line_scores.crawler()
+    line_scores = LineScores()
+    line_scores.crawler()

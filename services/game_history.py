@@ -216,7 +216,7 @@ class GameHistory:
                 logger("success", f"Page: '{link}' Done!")
                 flag = True
 
-            if time_step.is_month_end:
+            if time_step.is_month_end or date_str == self.end_date:
                 self.save_dataframe(f"{self.path_data}/game_history_{date_str}.csv")
 
             time.sleep(2)
