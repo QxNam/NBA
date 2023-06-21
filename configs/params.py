@@ -1,4 +1,4 @@
-# Common params
+# Common params configs
 HEADERS = {
     'Host': 'stats.nba.com',
     'Connection': 'keep-alive',
@@ -11,7 +11,7 @@ HEADERS = {
     'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7'
 }
 
-# LineUps
+# LineUps configs
 BASE_API_LINEUPS = 'https://stats.nba.com/stats/leaguedashlineups'
 BASE_PARAMS_LINEUPS = {
     'Conference': '',
@@ -57,7 +57,7 @@ PER_MODES_LINEUPS = ['Totals',
 ]
 GROUP_QUANTITY_LINEUPS = [2, 3, 4, 5]
 
-# Team standing
+# Team standing configs
 BASE_API_TEAM_STANDING = 'https://stats.nba.com/stats/leaguestandingsv3'
 BASE_PARAMS_TEAM_STANDING = {
     'GroupBy': 'conf',
@@ -66,3 +66,7 @@ BASE_PARAMS_TEAM_STANDING = {
     'SeasonType': 'Regular Season',
     'Section': 'overall'
 }
+
+# Coaches configs
+BASE_URL_COACHES = 'https://www.basketball-reference.com/leagues/NBA_{year}_coaches.html'
+

@@ -42,6 +42,7 @@ class LineUps:
         create_folder_if_not_existed(self.path_data)
 
     def crawler(self):
+        self.header['Host'] = 'stats.nba.com'
         self.header['Referer'] = 'https://stats.nba.com/draft/combine-anthro/'
         
         for measure_type in self.measure_types:
