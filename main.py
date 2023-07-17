@@ -11,20 +11,20 @@ if __name__ == '__main__':
     game_history = GameHistory()
     game_history.crawler()
     
-    team_info = TeamInfo()
-    team_info.crawler()
+    # team_info = TeamInfo()
+    # team_info.crawler()
 
-    line_scores = LineScores()
-    line_scores.crawler()
+    # line_scores = LineScores()
+    # line_scores.crawler()
 
-    line_ups = LineUps()
-    line_ups.crawler()
+    # line_ups = LineUps()
+    # line_ups.crawler()
 
-    team_standing = TeamStanding()
-    team_standing.crawler()
+    # team_standing = TeamStanding()
+    # team_standing.crawler()
 
-    coaches = Coaches()
-    coaches.crawler()
+    # coaches = Coaches()
+    # coaches.crawler()
 
-    team_stats = TeamStats()
-    team_stats.crawler()
+    # team_stats = TeamStats()
+    # team_stats.crawler()
