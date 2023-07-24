@@ -1,3 +1,6 @@
+START_YEAR = 2023
+END_YEAR = 2023
+
 # Common params configs
 HEADERS = {
     'Host': 'stats.nba.com',
@@ -10,52 +13,6 @@ HEADERS = {
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7'
 }
-
-# LineUps configs
-BASE_API_LINEUPS = 'https://stats.nba.com/stats/leaguedashlineups'
-BASE_PARAMS_LINEUPS = {
-    'Conference': '',
-    'DateFrom': '',
-    'DateTo': '',
-    'Division': '',
-    'GameSegment': '',
-    'GroupQuantity': '5',
-    'LastNGames': '0',
-    'LeagueID': '00',
-    'Location': '',
-    'MeasureType': 'Base',
-    'Month': '0',
-    'OpponentTeamID': '0',
-    'Outcome': '',
-    'PORound': '0',
-    'PaceAdjust': 'N',
-    'PerMode': 'PerGame',
-    'Period': '0',
-    'PlusMinus': 'N',
-    'Rank': 'N',
-    'Season': '2016-17',
-    'SeasonSegment': '',
-    'SeasonType': 'Regular Season',
-    'ShotClockRange': '',
-    'TeamID': '0',
-    'VsConference': '',
-    'VsDivision': ''
-}
-MEASURE_TYPES_LINEUPS = ['Base', 'Advanced', 'Misc', 'Four Factors', 'Scoring', 'Opponent']
-SEASON_TYPES_LINEUPS = ['Regular Season', 'Playoffs', 'All Star', 'PlayIn']
-PER_MODES_LINEUPS = ['Totals', 
-    'PerGame', 
-    'Per100Possessions', 
-    'Per100Plays', 
-    'Per48', 
-    'Per40', 
-    'Per36', 
-    'PerMinute', 
-    'PerPossession', 
-    'PerPlay', 
-    'MinutesPer'
-]
-GROUP_QUANTITY_LINEUPS = [2, 3, 4, 5]
 
 # Team standing configs
 BASE_API_TEAM_STANDING = 'https://stats.nba.com/stats/leaguestandingsv3'
@@ -109,7 +66,7 @@ BASE_PARAMS_GENERAL = {
     'VsDivision': ''
 }
 MEASURE_TYPES_GENERAL = ['Base', 'Advanced', 'Four Factors', 'Misc', 'Scoring', 'Opponent', 'Defense']
-SEASON_TYPES_GENERAL = ['Pre Season', 'Regular Season', 'Playoffs', 'All Star', 'PlayIn']
+SEASON_TYPES_GENERAL = ['Pre Season', 'Regular Season', 'Playoffs', 'PlayIn']
 PER_MODES_GENERAL = ['Totals', 'PerGame', 'Per100Possessions', 'Per100Plays', 'Per48', 'Per40', 'Per36', \
                      'PerMinute', 'PerPossession', 'PerPlay', 'MinutesPer']
 
@@ -156,7 +113,7 @@ BASE_PARAMS_CLUTCH = {
     'Weight': ''
 }
 MEASURE_TYPES_CLUTCH = ['Base', 'Advanced', 'Four Factors', 'Misc', 'Scoring', 'Opponent']
-SEASON_TYPES_CLUTCH = ['Pre Season', 'Regular Season', 'Playoffs', 'All Star', 'PlayIn']
+SEASON_TYPES_CLUTCH = ['Pre Season', 'Regular Season', 'Playoffs', 'PlayIn']
 PER_MODES_CLUTCH = ['Totals', 'PerGame', 'Per100Possessions', 'Per100Plays', 'Per48', 'Per40', 'Per36', \
                     'PerMinute', 'PerPossession', 'PerPlay', 'MinutesPer']
 
@@ -216,7 +173,7 @@ BASE_PARAMS_TRACKING = {
 # Post Up: PostTouch
 PT_MEASURE_TYPES = ['Drives', 'Defense', 'CatchShoot', 'Passing', 'Possessions', 'PullUpShot', \
                     'Rebounding', 'Efficiency', 'SpeedDistance', 'ElbowTouch', 'PostTouch', 'PaintTouch']
-SEASON_TYPES_TRACKING = ['Regular Season', 'Playoffs', 'All Star', 'PlayIn']
+SEASON_TYPES_TRACKING = ['Regular Season', 'Playoffs', 'PlayIn']
 PER_MODES_TRACKING = ['Totals', 'PerGame']
 
 # Defense Dashboard configs
@@ -245,7 +202,7 @@ BASE_PARAMS_DEFENSE = {
     'VsDivision': ''
 }
 DEFENSE_CATEGORIES = ['Overall', '3 Pointers', '2 Pointers', 'Less Than 6Ft', 'Less Than 10Ft', 'Greater Than 15Ft']
-SEASON_TYPES_DEFENSE = ['Regular Season', 'Playoffs', 'All Star', 'PlayIn']
+SEASON_TYPES_DEFENSE = ['Regular Season', 'Playoffs', 'PlayIn']
 
 # Shot Dashboard configs
 BASE_API_SHOT = 'https://stats.nba.com/stats/leaguedashteamptshot'
@@ -291,7 +248,7 @@ BASE_PARAMS_SHOT = {
     'Weight': ''
 }
 SHOT_TYPES = ['General', 'ShotClock', 'Dribble', 'TouchTime', 'ClosestDef', 'ClosestDef10']
-SEASON_TYPES_SHOT = ['Regular Season', 'Playoffs', 'All Star', 'PlayIn']
+SEASON_TYPES_SHOT = ['Regular Season', 'Playoffs', 'PlayIn']
 GENERAL_RANGE = ['Overall', 'Catch and Shoot', 'Pullups', 'Less Than 10Ft']
 SHOT_CLOCK_RANGE = ['24-22', '22-18 Very Early', '18-15 Early', '15-7 Average', '7-4 Late', '4-0 Very Late']
 DRIBBLE_RANGE = ['0 Dribbles', '1 Dribbles', '2 Dribbles', '3-6 Dribbles', '7+ Dribbles']
@@ -333,7 +290,7 @@ BASE_PARAMS_SHOOTING = {
     'VsConference': '',
     'VsDivision': ''
 }
-SEASON_TYPES_SHOOTING = ['Pre Season', 'Regular Season', 'Playoffs', 'All Star', 'PlayIn']
+SEASON_TYPES_SHOOTING = ['Pre Season', 'Regular Season', 'Playoffs', 'PlayIn']
 PER_MODES_SHOOTING = ['Totals', 'PerGame']
 DISTANCE_RANGE = ['5ft Range', '8ft Range', 'By Zone']
 
@@ -376,7 +333,7 @@ BASE_PARAMS_HUSTLE = {
     'VsDivision': '',
     'Weight': ''
 }
-SEASON_TYPES_HUSTLE = ['Regular Season', 'Playoffs', 'All Star', 'PlayIn']
+SEASON_TYPES_HUSTLE = ['Regular Season', 'Playoffs', 'PlayIn']
 PER_MODES_HUSTLE = ['Totals', 'PerGame', 'Per48', 'Per40', 'Per36', 'PerMinute']
 
 # Box Scores configs
@@ -392,7 +349,7 @@ BASE_PARAMS_BOX_SCORES = {
     'SeasonType': 'Playoffs',
     'Sorter': 'DATE'
 }
-SEASON_TYPES_BOX_SCORES = ['Pre Season', 'Regular Season', 'Playoffs', 'All Star', 'PlayIn']
+SEASON_TYPES_BOX_SCORES = ['Pre Season', 'Regular Season', 'Playoffs', 'PlayIn']
 
 # Advanced Box Scores configs
 BASE_API_ADVANCED_BOX_SCORES = 'https://stats.nba.com/stats/playergamelogs'

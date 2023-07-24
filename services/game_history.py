@@ -10,18 +10,26 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from configs.nba_team import NBA_TEAM_SHORT_NAME
 from utils.logging import logger
+from utils import logging
+log = logging.Logger()
 from utils.utils import (
     get_timeline, 
     is_ready,
-    create_folder_if_not_existed
+    get_day,
+    write_csv,
+    write_log
 )
-
+from configs.params import (
+    HEADERS,
+    START_YEAR,
+    END_YEAR
+)
 
 class GameHistory:
     def __init__(
         self, 
-        start_date: str = "2016-01-01", 
-        end_date: str = "2016-01-01", 
+        start_date: str = get_day(START_YEAR, is_start_day=True), 
+        end_date: str = get_day(END_YEAR), 
         path_data: str = "./data/game_history"
     ):
         self.start_date = start_date
@@ -33,21 +41,6 @@ class GameHistory:
         self.options = webdriver.ChromeOptions()
         self.options.add_argument('--headless')
         self.options.add_argument('--incognito')
-
-        self.game_ids = []
-        self.years = []
-        self.dates = []
-        self.away_teams_name = []
-        self.home_teams_name = []
-        self.periods = []
-        self.game_periods = []
-        self.away_teams_score = []
-        self.home_teams_score = []
-        self.series_scores = []
-        self.away_teams_leader = []
-        self.home_teams_leader = []
-
-        create_folder_if_not_existed(self.path_data)
 
     def get_game_id(self, game_card_element: WebElement):
         xpath_game_link = ".//section[@class='GameCard_gcMain__q1lUW']/a"
@@ -151,7 +144,7 @@ class GameHistory:
     def crawler(self):
         browser = webdriver.Chrome(service=self.service, options=self.options)
 
-        for time_step in self.timeline:
+        for idx, time_step in enumerate(self.timeline):
             date_str = time_step.strftime("%Y-%m-%d")
             link = self.get_page_by_date(date_str)
 
@@ -163,18 +156,24 @@ class GameHistory:
             # Inspect the page to get elements
             xpath_game_card_mapper = "//div[@class='GameCard_gc__UCI46 GameCardsMapper_gamecard__pz1rg']"
             game_card_mapper = browser.find_elements(By.XPATH, xpath_game_card_mapper)
+            print(log.status(title='game_history', idx=idx, n=len(self.timeline)), date_str, log.OK(), end = ' -> ')
+            write_log('game_history', f"[OK] {date_str}")
 
             flag = True
             if len(game_card_mapper) == 0:
                 flag = False
-                logger("warning", f"Page: '{link}' No game in day!")
+                print('No game in day!')
+                write_log('game_history', f"[OK] {date_str}: No game in day!")
+                continue
             
-            for game_card in game_card_mapper:
+            for card_idx, game_card in enumerate(game_card_mapper):
+                card_n = len(game_card_mapper)
                 try:
                     xpath_preseason = ".//span[@class='GameCardMatchupStatusText_gcsPre__rnEtg']"
                     preseason = game_card.find_element(By.XPATH, xpath_preseason)
                     if preseason.text.lower() == "preseason":
-                        logger("warning", f"Page: '{link}' Preseason game!")
+                        print(f'{card_idx+1}/{card_n}', 'Preseason game!', end=', ')
+                        write_log('game_history', f'+ ({card_idx+1}/{card_n}) [OK]: Preseason game!')
                         continue
                 except:
                     pass
@@ -186,60 +185,62 @@ class GameHistory:
                 period = self.get_period(game_card)
                 game_period, sscore = self.get_game_period_sscore(game_card)
 
-                self.game_ids.append(game_id)
-                self.years.append(time_step.year)
-                self.dates.append(date_str)
-                self.away_teams_name.append(away_team_name)
-                self.home_teams_name.append(home_team_name)
-                self.periods.append(period)
-                self.game_periods.append(game_period)
-                self.away_teams_score.append(away_team_score)
-                self.home_teams_score.append(home_team_score)
-                self.series_scores.append(sscore)
-
                 game_leader_str_pattern = "{name} ({pts}, {reb}, {ast})"
+                away_teams_leader, home_teams_leader = None, None
                 # Check empty game leader dict
                 if not any(game_leaders.values()):
-                    self.away_teams_leader.append('')
-                    self.home_teams_leader.append('')
+                    away_teams_leader=''
+                    home_teams_leader=''
                 elif game_leaders['away_team'] == {}:
-                    self.away_teams_leader.append('')
-                    self.home_teams_leader.append(game_leader_str_pattern.format(**game_leaders['home_team']))
+                    away_teams_leader=''
+                    home_teams_leader=game_leader_str_pattern.format(**game_leaders['home_team'])
                 elif game_leaders['home_team'] == {}:
-                    self.away_teams_leader.append(game_leader_str_pattern.format(**game_leaders['away_team']))
-                    self.home_teams_leader.append('')
+                    away_teams_leader=game_leader_str_pattern.format(**game_leaders['away_team'])
+                    home_teams_leader=''
                 else:
-                    self.away_teams_leader.append(game_leader_str_pattern.format(**game_leaders['away_team']))
-                    self.home_teams_leader.append(game_leader_str_pattern.format(**game_leaders['home_team']))
+                    away_teams_leader=game_leader_str_pattern.format(**game_leaders['away_team'])
+                    home_teams_leader=game_leader_str_pattern.format(**game_leaders['home_team'])
 
-            if flag:
-                logger("success", f"Page: '{link}' Done!")
-                flag = True
+                print(f'{card_idx+1}/{card_n}', log.OK('OK'), end=', ')
+                write_log('game_history', f'+ ({card_idx+1}/{card_n}) [OK]')
+                data = {
+                    'Game_id': game_id,
+                    'Year': time_step.year,
+                    'Date': f'{time_step.day}/{time_step.month}',
+                    'Team_1': home_team_name,
+                    'Team_2': away_team_name,
+                    'Period': period,
+                    'Game': game_period,
+                    'T1_Score': home_team_score,
+                    'T2_Score': away_team_score,
+                    'Seri_Score': sscore,
+                    'T1_GameLead': home_teams_leader,
+                    'T2_GameLead': away_teams_leader
+                }
+                write_csv(f'game_history.csv', data)
+            print()
 
-            if time_step.is_month_end or date_str == self.end_date:
-                self.save_dataframe(f"{self.path_data}/game_history_{date_str}.csv")
+            time.sleep(1)
 
-            time.sleep(2)
+    # def save_dataframe(self, path):
+    #     df = pd.DataFrame({
+    #         'game_id': self.game_ids,
+    #         'year': self.years,
+    #         'date': self.dates,
+    #         'away_team_name': self.away_teams_name,
+    #         'home_team_name': self.home_teams_name,
+    #         'period': self.periods,
+    #         'game_period': self.game_periods,
+    #         'away_team_score': self.away_teams_score,
+    #         'home_team_score': self.home_teams_score,
+    #         'series_score': self.series_scores,
+    #         'away_team_leader': self.away_teams_leader,
+    #         'home_team_leader': self.home_teams_leader
+    #     })
 
-    def save_dataframe(self, path):
-        df = pd.DataFrame({
-            'game_id': self.game_ids,
-            'year': self.years,
-            'date': self.dates,
-            'away_team_name': self.away_teams_name,
-            'home_team_name': self.home_teams_name,
-            'period': self.periods,
-            'game_period': self.game_periods,
-            'away_team_score': self.away_teams_score,
-            'home_team_score': self.home_teams_score,
-            'series_score': self.series_scores,
-            'away_team_leader': self.away_teams_leader,
-            'home_team_leader': self.home_teams_leader
-        })
-
-        if df.empty:
-            logger("warning", "Empty dataframe!")
-            return
+    #     if df.empty:
+    #         logger("warning", "Empty dataframe!")
+    #         return
         
-        df.to_csv(path, index=False, encoding='utf-8')
-        logger("success", f"Save dataframe at: {path}")
+    #     df.to_csv(path, index=False, encoding='utf-8')
+    #     logger("success", f"Save dataframe at: {path}")

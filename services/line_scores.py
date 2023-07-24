@@ -1,75 +1,140 @@
-import json
-import time
-import requests
+# import sys
+# sys.path.append('..')
+from utils import logging
+log = logging.Logger()
 
-import pandas as pd
-
-from collections import defaultdict
-from configs.params import HEADERS
-from services.processing import processing_line_scores
-from utils.logging import logger
 from utils.utils import (
+    write_csv,
+    write_log,
     get_timeline,
-    create_folder_if_not_existed
+    get_day,
+    check_requests
 )
+from configs.params import (
+    HEADERS,
+    START_YEAR,
+    END_YEAR,
+)
+from configs.nba_team import ID_TEAM_NAME
+import json
 
+# congig
+URL_LINESCORES = "https://global.nba.com/statsm2/scores/daily.json?gameDate={date}"
+EXTRACT_DATA = {
+    'GameID': 'gameId',
+    'GameDate': '',
+    'Location': {
+        'arena_name': 'arenaName',
+        'arena_location': 'arenaLocation'
+    },
+    'Attendance':'attendance',
+    'Team': 'id',
+    'Score': 'score',
+    'Q1': 'q1Score',
+    'Q2': 'q2Score',
+    'Q3': 'q3Score',
+    'Q4': 'q4Score',
+    'OT1': 'ot1Score',
+    'OT2': 'ot2Score',
+    'OT3': 'ot3Score',
+    'OTOthers': '',
+    'PITP': 'pointsInPaint',
+    'FB_PTS': 'fastBreakPoints',
+    'BIG_LD': 'biggestLead'
+}
 
-class LineScores:
-    def __init__(
-        self,
-        start_date: str = "2016-01-01",
-        end_date: str = "2016-01-01",
-        path_data: str = "./data/line_scores",
-    ):
-        self.start_date = start_date
-        self.end_date = end_date
-        self.path_data = path_data
-        self.timeline = get_timeline(start_date, end_date)
+def process(game_data: dict, day: str) -> None:
+    payload = game_data['payload']
 
-        self.header = HEADERS
+    if payload['date'] == None:
+        print('No match in this day!')
+        write_log('line_scores', '+ No match in this day!')
+        return
 
-        self.games_data = defaultdict(list)
-        create_folder_if_not_existed(self.path_data)
-    
-    @staticmethod
-    def get_api_by_date(date: str="2016-01-01"):
-        return f"https://global.nba.com/statsm2/scores/daily.json?gameDate={date}"
-    
-    def crawler(self):
-        self.header['Host'] = 'global.nba.com'
-        self.header['Referer'] = 'https://global.nba.com/scores/'
+    list_games = payload['date']['games']
+    #.fromkeys(EXTRACT_DATA.keys(), '')
 
-        for time_step in self.timeline:
-            flag = True
-            date_str = time_step.strftime("%Y-%m-%d")
-            api = self.get_api_by_date(date_str)
-            res = requests.get(api, headers=self.header)
+    for idx_game, game in enumerate(list_games):
+        data = {}
+        print(f'{idx_game+1}/{len(list_games)}', end=' ')
+        try:
+        # Game ID
+            data['GameID']=game['profile'][EXTRACT_DATA['GameID']]
 
-            if res.status_code == 200:
-                if res.text != '':
-                    res_data = json.loads(res.text)
-                    processed_data = processing_line_scores(res_data)
+            # Year, Date of game
+            data['GameDate']=day
 
-                    if processed_data:
-                        if not any(self.games_data.values()):
-                            self.games_data = processed_data
-                        else:
-                            [self.games_data[key].extend(processed_data[key]) \
-                             for key in self.games_data.keys()]
-                    else:
-                        flag = False
-                        logger("warning", f"API URL: {api} No game in day!")
+            # Get location
+            arena_name = game['profile'][EXTRACT_DATA['Location']['arena_name']]
+            arena_location = game['profile'][EXTRACT_DATA['Location']['arena_location']]
+            data['Location'] = f'{arena_name}_{arena_location}'
 
-                    if flag:
-                        logger("success", f"API URL: {api} done!")
+            # Get attendance
+            data['Attendance'] = int(game['boxscore'][EXTRACT_DATA['Attendance']].replace(',', ''))
+
+            # get each team
+            others_ot_score_keys = [f'ot{times}Score' for times in range(4, 11)]
+            for idx, team_key in enumerate(['awayTeam', 'homeTeam']):
+                team = game[team_key]
+                team_id = int(team['profile'][EXTRACT_DATA['Team']])
+                data[f'Team_{idx+1}_id']=team_id
+                if team_id in ID_TEAM_NAME.keys():
+                    data[f'Team_{idx+1}_name']=ID_TEAM_NAME[team_id]
                 else:
-                    logger("warning", f"API URL: {api} return empty data!")
-            else:
-                logger("warning", f"API URL: {api} return status code: {res.status_code}")
+                    data[f'Team_{idx+1}_name']=team["profile"]["name"]
+                    print(log.WARN(), f'{team_id}: {team["profile"]["name"]}', end=' ')
+                    write_log('line_scores', f'---> {team_id}: {team["profile"]["name"]}')
+                team_score = team['score']
+                data[f'Team_{idx+1}_Score']=team_score[EXTRACT_DATA['Score']]
+                data[f'Team_{idx+1}_Q1']=team_score[EXTRACT_DATA['Q1']]
+                data[f'Team_{idx+1}_Q2']=team_score[EXTRACT_DATA['Q2']]
+                data[f'Team_{idx+1}_Q3']=team_score[EXTRACT_DATA['Q3']]
+                data[f'Team_{idx+1}_Q4']=team_score[EXTRACT_DATA['Q4']]
+                data[f'Team_{idx+1}_OT1']=team_score[EXTRACT_DATA['OT1']]
+                data[f'Team_{idx+1}_OT2']=team_score[EXTRACT_DATA['OT2']]
+                data[f'Team_{idx+1}_OT3']=team_score[EXTRACT_DATA['OT3']]
+                data[f'Team_{idx+1}_OTOthers']=sum([team_score[score_key] for score_key in others_ot_score_keys])
+                data[f'Team_{idx+1}_PITP']=team_score[EXTRACT_DATA['PITP']]
+                data[f'Team_{idx+1}_FB_PTS']=team_score[EXTRACT_DATA['FB_PTS']]
+                data[f'Team_{idx+1}_BIG_LD']=team_score[EXTRACT_DATA['BIG_LD']]
+            write_csv(f'line_scores.csv', data)
+            print(log.OK('OK'), end=', ')
+            write_log('line_scores', f'+ ({idx_game+1}/{len(list_games)}) [OK]')
+        except Exception as e:
+            print(log.FAIL('FAIL'), f': {e}', end=', ')
+            write_log('line_scores', f'+ ({idx_game+1}/{len(list_games)}) [FAIL]: {e}')
+            continue
+    print()
 
-            if time_step.is_month_end or date_str == self.end_date:
-                df = pd.DataFrame(self.games_data)
-                df.to_csv(f'{self.path_data}/line_scores_{date_str}.csv', index=False, encoding='utf-8')
-                logger("success", f"Saved data at: {self.path_data}/line_scores_{date_str}.csv")
+        
 
-            time.sleep(1)
+
+def run():
+    HEADERS['Host'] = 'global.nba.com'
+    HEADERS['Referer'] = 'https://global.nba.com/scores/'
+    timeline = get_timeline(get_day(START_YEAR, is_start_day=True), get_day(END_YEAR))
+    for idx, time_step in enumerate(timeline):
+        date_str = time_step.strftime("%Y-%m-%d")
+        api = URL_LINESCORES.format(date=date_str)
+        res = check_requests(api, HEADERS)
+        if res.status_code == 200:
+            res = json.loads(res.text)
+            print(log.status(title='line_scores', idx=idx, n=len(timeline)), date_str, log.OK(), end = ' -> ')
+            write_log('line_scores', f'[OK] {date_str}')
+        else:
+            print(log.status(title='line_scores', idx=idx, n=len(timeline)), date_str, log.FAIL(), f'Status code: {res.status_code}')
+            write_log('line_scores', f'[FAIL] {date_str}: {res.status_code}')
+            continue
+        process(res, date_str)
+    print(log.OK('--------------- Done line_scores! ---------------'))
+
+# def debug(day='2016-02-13'):
+#     HEADERS['Host'] = 'global.nba.com'
+#     HEADERS['Referer'] = 'https://global.nba.com/scores/'
+#     api = URL_LINESCORES.format(date=day)
+#     res = check_requests(api, HEADERS)
+#     if res.status_code == 200:
+#         res = json.loads(res.text)
+#         process(res, day)
+#     else:
+#         print(res.status_code)

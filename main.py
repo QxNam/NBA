@@ -1,30 +1,36 @@
 from services.game_history import GameHistory
-from services.team_info import TeamInfo
-from services.line_scores import LineScores
-from services.lineups import LineUps
-from services.team_standing import TeamStanding
-from services.coaches import Coaches
-from services.team_stats import TeamStats
+from services import (
+    coaches, 
+    injury_info, 
+    line_scores, 
+    lineups, 
+    team_stats, 
+    team_standing,
+    player_info,
+    player_info_detail,
+    bet_rate
+)
 
 
 if __name__ == '__main__':
-    game_history = GameHistory()
-    game_history.crawler()
+    # game_history = GameHistory()
+    # game_history.crawler()
     
     # team_info = TeamInfo()
     # team_info.crawler()
 
-    # line_scores = LineScores()
-    # line_scores.crawler()
-
-    # line_ups = LineUps()
-    # line_ups.crawler()
-
     # team_standing = TeamStanding()
     # team_standing.crawler()
 
-    # coaches = Coaches()
-    # coaches.crawler()
-
     # team_stats = TeamStats()
     # team_stats.crawler()
+    
+    # coaches.run()
+    # injury_info.run()
+    # line_scores.run()
+    # lineups.run()
+    # team_stats.run()
+    # team_standing.run()
+    # player_info.run()
+    # player_info_detail.run()
+    bet_rate.run()
